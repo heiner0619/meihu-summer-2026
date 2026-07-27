@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Skill · 美护选品拓品分析</title>
+<style>
+  :root {
+    --bg: #f7f9fc; --card: #fff;
+    --ink: #1a2940; --ink-2: #5b6b85; --ink-3: #94a3b8;
+    --line: #e6ebf2; --line-2: #f0f3f7;
+    --accent: #0066cc; --accent-bg: #e8f1ff;
+    --green: #16a34a; --green-bg: #ecfdf5;
+    --pink: #ec4899; --pink-bg: #fdf2f8;
+    --yellow: #ca8a04; --yellow-bg: #fefce8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg); color: var(--ink);
+    font-family: "PingFang SC", "Microsoft YaHei", -apple-system, system-ui, sans-serif;
+    min-height: 100vh; padding: 40px 24px 60px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 880px; margin: 0 auto; }
+  code, .mono {
+    font-family: "SF Mono", "Monaco", "Menlo", "Courier New", monospace;
+  }
+
+  .hero { margin-bottom: 36px; }
+  .hero h1 {
+    font-size: 28px; font-weight: 800; letter-spacing: -.5px;
+    line-height: 1.3; margin-bottom: 10px;
+  }
+  .hero .sub {
+    font-size: 15px; color: var(--ink-2); line-height: 1.7;
+  }
+  .hero .sub b { color: var(--ink); }
+  .hero .sub .pink { color: var(--pink); font-weight: 700; }
+
+  .section { margin-bottom: 28px; }
+  h2 {
+    font-size: 13px; font-weight: 700; letter-spacing: 1.5px;
+    color: var(--ink-3); text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  h2 .num {
+    background: var(--accent); color: #fff;
+    width: 22px; height: 22px; border-radius: 50%;
+    font-size: 12px; display: inline-flex;
+    align-items: center; justify-content: center;
+    margin-right: 8px; vertical-align: middle;
+  }
+
+  .trigger {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.02);
+  }
+  .trigger .lbl {
+    font-size: 12px; color: var(--accent); font-weight: 700;
+    margin-bottom: 12px; letter-spacing: 1px;
+  }
+  .trigger .prompt {
+    background: #fafbfc; border: 1px solid var(--line);
+    border-radius: 8px; padding: 16px 18px;
+    font-family: "SF Mono", monospace;
+    font-size: 14px; line-height: 1.8; color: var(--ink);
+  }
+  .trigger .prompt .var {
+    color: var(--yellow); font-style: italic;
+  }
+  .trigger .note {
+    font-size: 12.5px; color: var(--ink-3); line-height: 1.6;
+    margin-top: 12px;
+  }
+  .trigger .note b { color: var(--ink-2); }
+
+  .prep {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 20px 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.02);
+  }
+  .prep .row {
+    display: flex; gap: 14px; align-items: flex-start;
+    padding: 12px 0; border-bottom: 1px dashed var(--line-2);
+  }
+  .prep .row:last-child { border-bottom: 0; }
+  .prep .row .n {
+    background: var(--accent-bg); color: var(--accent);
+    width: 24px; height: 24px; border-radius: 50%;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .prep .row .d {
+    font-size: 13.5px; line-height: 1.6;
+  }
+  .prep .row .d b { font-weight: 700; }
+  .prep .row .d span {
+    color: var(--ink-3); font-size: 12px; display: block; margin-top: 2px;
+  }
+
+  .chat {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 22px 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.02);
+  }
+  .bubble {
+    display: flex; gap: 10px; margin-bottom: 14px;
+    align-items: flex-start;
+  }
+  .bubble:last-child { margin-bottom: 0; }
+  .bubble .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    flex-shrink: 0; display: flex; align-items: center;
+    justify-content: center; font-size: 14px; font-weight: 700;
+  }
+  .bubble.user .avatar { background: var(--accent-bg); color: var(--accent); }
+  .bubble.ai .avatar { background: var(--pink-bg); color: var(--pink); }
+  .bubble .msg {
+    background: #fafbfc; border: 1px solid var(--line);
+    padding: 10px 14px; border-radius: 8px;
+    font-size: 13px; line-height: 1.65;
+    flex: 1; max-width: 90%;
+  }
+  .bubble.user .msg {
+    background: var(--accent-bg); border-color: rgba(0,102,204,.15);
+    color: var(--accent);
+  }
+  .bubble.user .msg em {
+    color: var(--yellow); font-style: normal; font-weight: 600;
+  }
+  .bubble .msg b { color: var(--ink); font-weight: 700; }
+  .bubble.user .msg b { color: var(--accent); }
+  .bubble .msg .tool {
+    font-family: "SF Mono", monospace; font-size: 11px;
+    background: var(--green-bg); color: var(--green);
+    padding: 1px 7px; border-radius: 3px; margin: 0 2px;
+  }
+  .bubble .msg .out {
+    color: var(--ink-2); font-size: 12.5px;
+    border-left: 2px solid var(--line); padding-left: 10px;
+    margin-top: 6px;
+  }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .info-card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 10px; padding: 16px 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.02);
+  }
+  .info-card h3 {
+    font-size: 13.5px; font-weight: 700; margin-bottom: 10px;
+    color: var(--ink);
+  }
+  .info-card .list {
+    font-size: 12.5px; color: var(--ink-2); line-height: 1.85;
+  }
+  .info-card .list b { color: var(--ink); }
+  .info-card code {
+    background: var(--line-2); padding: 2px 6px;
+    border-radius: 3px; font-size: 11.5px; color: var(--accent);
+  }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
+  .tag {
+    font-size: 11.5px; padding: 3px 10px; border-radius: 6px;
+    font-weight: 600;
+  }
+  .tag-green { background: var(--green-bg); color: var(--green); }
+  .tag-blue { background: var(--accent-bg); color: var(--accent); }
+  .tag-pink { background: var(--pink-bg); color: var(--pink); }
+  .tag-yellow { background: var(--yellow-bg); color: var(--yellow); }
+
+  .foot {
+    text-align: center; color: var(--ink-3); font-size: 11.5px;
+    margin-top: 32px; padding-top: 18px; border-top: 1px solid var(--line);
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hero">
+    <h1>🔬 美护选品拓品分析</h1>
+    <div class="sub">
+      <span class="pink">在 IDE 聊天框说一句话</span>，agent 产出个护·家清·亲子三行业的<span class="pink">选品拓品榜单</span>（含市场缺口识别 + 赛道机会评级 + 三级商品下钻 + 双版 HTML 报告）。<br>
+      适用<b>夏季 / 冬季 / 节令性拓品</b> · 全程约 <b>15 分钟</b>。
+    </div>
+    <div class="tag-row">
+      <span class="tag tag-green">市场缺口</span>
+      <span class="tag tag-blue">已布局</span>
+      <span class="tag tag-pink">观察验证</span>
+      <span class="tag tag-yellow">历史季节信号</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">1</span>怎么用</h2>
+    <div class="trigger">
+      <div class="lbl">新会话 · 在 CodeBuddy 聊天框粘贴启动 Prompt：</div>
+      <div class="prompt">
+        打开文件 <span class="var">新会话启动Prompt_美护选品拓品最终分析.md</span>，复制全部内容到新会话
+      </div>
+      <div class="note">
+        Agent 会自动读取项目记忆、分析框架、数据口径等关键文件，<b>不需要你手动解释任何背景</b>。<br>
+        如需更新数据，参考 <code>取数操作说明_选品拓品.md</code> 先拉取最新周度数据。
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">2</span>分析框架</h2>
+    <div class="prep">
+      <div class="row">
+        <div class="n">1</div>
+        <div class="d">
+          <b>第一层 · 双平台消费者需求</b>
+          <span>友望（视频号）× 蝉妈妈（抖音）→ 识别四类需求来源：双平台验证 / 视频号验证 / 抖音外部验证 / 需求信号弱</span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="n">2</div>
+        <div class="d">
+          <b>第二层 · 我方近期供给</b>
+          <span>adata 近 4 周 → GMV/消耗/ROI 排名 + 逐周动量 + SPU 宽度 + 集中度</span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="n">3</div>
+        <div class="d">
+          <b>第三层 · 历史季节信号</b>
+          <span>2025 年 8 月 adata → 赛道排名、代表商品、客户/SPU 基础、ROI 参考</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">3</span>实际对话长这样</h2>
+    <div class="chat">
+
+      <div class="bubble user">
+        <div class="avatar">你</div>
+        <div class="msg">
+          粘贴 <em>新会话启动Prompt_美护选品拓品最终分析.md</em> 全部内容到新会话
+        </div>
+      </div>
+
+      <div class="bubble ai">
+        <div class="avatar">AI</div>
+        <div class="msg">
+          已读取全部必读文件。核心口径确认：<b>10赛道、三层分析链、四类结论、2025年8月为历史窗口</b>。开始重算分析。
+          <span class="tool">read_file</span>
+          <span class="tool">execute_command</span>
+        </div>
+      </div>
+
+      <div class="bubble ai">
+        <div class="avatar">AI</div>
+        <div class="msg">
+          <span class="tool">write_to_file</span>
+          <div class="out">
+            ✅ 最终 MD 草稿已生成：<code>美护选品拓品_6-8月夏季榜单_最终草稿.md</code><br>
+            📊 4 个市场缺口：纸品湿巾(P0)、身体洗护(P0)、母婴用品(P1)、养生理疗贴(P1)<br>
+            📊 4 个已布局：头发洗护造型、家庭环境清洁、玩具文具、口腔护理<br>
+            📊 2 个观察验证：女性私护、衣物清洁
+          </div>
+        </div>
+      </div>
+
+      <div class="bubble user">
+        <div class="avatar">你</div>
+        <div class="msg">确认，生成 HTML</div>
+      </div>
+
+      <div class="bubble ai">
+        <div class="avatar">AI</div>
+        <div class="msg">
+          <span class="tool">execute_command</span>
+          <div class="out">
+            ✅ 双版 HTML 已生成并自动打开：<br>
+            · 对外版（脱敏指数化）：<code>美护选品拓品_6-8月夏季榜单_最终版_对外版.html</code><br>
+            · 对内版（完整数据）：<code>美护选品拓品_6-8月夏季榜单_最终版_对内版.html</code>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">4</span>行业范围 & 赛道</h2>
+    <div class="grid">
+      <div class="info-card">
+        <h3>🧴 个护（5 赛道）</h3>
+        <div class="list">
+          口腔护理<br>头发洗护造型<br>身体洗护<br>女性私护<br>养生理疗贴
+        </div>
+      </div>
+      <div class="info-card">
+        <h3>🧹 家清（2 赛道）</h3>
+        <div class="list">
+          家庭环境清洁<br>衣物清洁
+        </div>
+      </div>
+      <div class="info-card">
+        <h3>👶 亲子（3 赛道）</h3>
+        <div class="list">
+          纸品湿巾<br>母婴用品<br>玩具文具
+        </div>
+      </div>
+      <div class="info-card">
+        <h3>📁 核心数据源</h3>
+        <div class="list">
+          <b>友望</b> · 视频号商品榜<br>
+          <b>蝉妈妈</b> · 抖音商品榜<br>
+          <b>adata</b> · 内部竞价投放数据
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2><span class="num">5</span>产出物</h2>
+    <div class="grid">
+      <div class="info-card">
+        <h3>📊 最终 MD 草稿（先确认）</h3>
+        <div class="list">
+          执行摘要 + 数据口径 + 三层分析<br>
+          最终主榜（含需求来源/历史信号/置信度）<br>
+          分赛道三级商品下钻 + 方法论提炼
+        </div>
+      </div>
+      <div class="info-card">
+        <h3>🌐 双版 HTML（后产出）</h3>
+        <div class="list">
+          <b>对外版</b>：指数化脱敏，ECharts 图表<br>
+          <b>对内版</b>：完整数据，含精确 GMV/ROI<br>
+          单文件自包含，可直接分享
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    最新产出（2026-07-27）· 个护·家清·亲子三行业 · 10 赛道 · 三层分析链
+  </div>
+
+</div>
+</body>
+</html>
